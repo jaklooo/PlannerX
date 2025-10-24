@@ -11,6 +11,7 @@ gunicorn==21.2.0
 
 # Database
 psycopg[binary]>=3.2.2
+psycopg2-binary>=2.9.9
 
 # Authentication & AI
 firebase-admin==6.2.0
