@@ -3,8 +3,8 @@
 // Store Firebase ID token
 let idToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken');
 
-// Force dev mode token for development
-if (!idToken || idToken.includes('test@example.com')) {
+// Only set demo token if there's absolutely no token (not even an old one)
+if (!idToken) {
     idToken = 'dev_demo_user:demo@plannerx.local';
     localStorage.setItem('auth_token', idToken);
     localStorage.setItem('idToken', idToken);
