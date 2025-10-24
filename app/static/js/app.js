@@ -16,14 +16,11 @@ window.fetch = function(url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    
-    // Add Authorization header for API calls
-    if (url.startsWith('/tasks') || url.startsWith('/events') || 
-        url.startsWith('/contacts') || url.startsWith('/settings') || 
-        url.startsWith('/dashboard')) {
+    // Add Authorization header for all /api/ and protected API calls
+    if (url.startsWith('/api/') || url.startsWith('/tasks') || url.startsWith('/events') || 
+        url.startsWith('/contacts') || url.startsWith('/settings') || url.startsWith('/dashboard')) {
         options.headers['Authorization'] = `Bearer ${idToken}`;
     }
-    
     return originalFetch(url, options);
 };
 
