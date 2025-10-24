@@ -16,12 +16,16 @@ def index():
     return redirect("/dashboard/")
 
 
-@auth_bp.route("/logout", methods=["POST"])
-def logout():
-    """Logout - clear session."""
-    from flask import session
-    session.clear()
-    return "", 204
+@auth_bp.route("/login", methods=["GET"])
+def login():
+    """Login page."""
+    return render_template("login.html",
+                         firebase_api_key=config.FIREBASE_API_KEY,
+                         firebase_auth_domain=f"{config.FIREBASE_PROJECT_ID}.firebaseapp.com",
+                         firebase_project_id=config.FIREBASE_PROJECT_ID,
+                         firebase_storage_bucket=f"{config.FIREBASE_PROJECT_ID}.firebasestorage.app",
+                         firebase_messaging_sender_id=config.FIREBASE_MESSAGING_SENDER_ID,
+                         firebase_app_id=config.FIREBASE_APP_ID)
 
 
 @auth_bp.route("/api/verify-token", methods=["POST"])
