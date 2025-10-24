@@ -1,17 +1,7 @@
 // PlannerX Frontend JavaScript
 
-// Store Firebase ID token - DISABLED automatic demo token
-// let idToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken');
-
-// Only set demo token if there's absolutely no token (not even an old one) - DISABLED
-// if (!idToken) {
-//     idToken = 'dev_demo_user:demo@plannerx.local';
-//     localStorage.setItem('auth_token', idToken);
-//     localStorage.setItem('idToken', idToken);
-// }
-
-// Initialize idToken as empty for manual login only
-let idToken = '';
+// Store Firebase ID token - read from localStorage
+let idToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken') || '';
 
 // Set token on all API requests - only if token exists
 const originalFetch = window.fetch;
@@ -19,14 +9,18 @@ window.fetch = function(url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
+    
+    // Always try to get the latest token from localStorage
+    const currentToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken') || idToken;
+    
     // Add Authorization header for API calls and protected routes only if token exists
     const isApiCall = url.startsWith('/api/');
     const isProtectedRoute = url.startsWith('/tasks') || url.startsWith('/events') || 
                            url.startsWith('/contacts') || url.startsWith('/settings');
     const isDashboard = url.startsWith('/dashboard');
     
-    if ((isApiCall || isProtectedRoute || isDashboard) && idToken) {
-        options.headers['Authorization'] = `Bearer ${idToken}`;
+    if ((isApiCall || isProtectedRoute || isDashboard) && currentToken) {
+        options.headers['Authorization'] = `Bearer ${currentToken}`;
     }
     return originalFetch(url, options);
 };
