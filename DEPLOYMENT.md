@@ -35,11 +35,11 @@ DATABASE_URL=postgresql://plannerx:password@postgres:5432/plannerx
 SMTP_HOST=smtp.mailgun.org
 SMTP_PORT=587
 SMTP_USER=postmaster@your-domain.com
-SMTP_PASSWORD=<mailgun-password>
+SMTP_PASSWORD=your-mailgun-password
 EMAIL_FROM=PlannerX <no-reply@your-domain.com>
 
 FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_API_KEY=your-api-key
+  FIREBASE_API_KEY=your-firebase-api-key
 FIREBASE_ALLOWED_ISSUER=https://securetoken.google.com/your-project-id
 
 DIGEST_HOUR=7

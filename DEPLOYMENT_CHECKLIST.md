@@ -44,7 +44,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_STARTTLS=true
 SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=abcdefghijklmnop  # Bez medzier!
+SMTP_PASSWORD=your-app-password  # Bez medzier!
 EMAIL_FROM=PlannerX <your-email@gmail.com>
 ```
 

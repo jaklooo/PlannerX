@@ -28,7 +28,7 @@ copy .env.example .env
 Upravte `.env` - minimum potrebné:
 ```env
 SECRET_KEY=my-secret-key-123
-SMTP_USER=your-email@gmail.com
+SMTP_USER=your-email@example.com
 SMTP_PASSWORD=your-app-password
 ```
 
