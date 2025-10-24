@@ -108,7 +108,7 @@ def require_auth(f):
             return f(*args, **kwargs)
         
         # Production mode: redirect to login if no token for GET requests to dashboard
-        if not auth_header and request.method == "GET" and request.path in ["/", "/dashboard"]:
+        if not auth_header and request.method == "GET" and request.path.startswith("/dashboard"):
             from flask import redirect, url_for
             return redirect(url_for("auth.login"))
         
