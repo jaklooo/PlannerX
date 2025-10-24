@@ -1,0 +1,93 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite3
+data/db.sqlite3
+data/news_cache.json
+
+# Environment variables
+.env
+.env.local
+
+# Firebase service account keys (NEVER commit these!)
+*firebase*.json
+serviceAccountKey.json
+firebase-service-account.json
+
+# AWS credentials
+.aws/
+*.pem
+
+# Google Cloud
+*.p12
+*.pem
+gcp-key.json
+
+# API keys and secrets
+secrets.json
+credentials.json
+keys.json
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Linting
+.ruff_cache/
+.mypy_cache/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Udalosti - PlannerX{% endblock %}
+
+{% block content %}
+<div class="events-page">
+    <div class="page-header">
+        <h1>📅 Udalosti</h1>
+        <button class="btn btn-primary" onclick="showCreateEventModal()">+ Nová udalosť</button>
+    </div>
+
+    <div class="event-list">
+        {% for item in events %}
+        <div class="event-card" data-event-id="{{ item.event.id }}">
+            <div class="event-header">
+                <h3>{{ item.event.title }}</h3>
+                <span class="event-repeat">{{ item.event.repeat_rule }}</span>
+            </div>
+            {% if item.event.description %}
+                <p class="event-description">{{ item.event.description }}</p>
+            {% endif %}
+            <div class="event-details">
+                <span>🕒 {{ item.occurrence_date.strftime('%d.%m.%Y') }} {{ item.event.start_at.strftime('%H:%M') }}</span>
+                {% if item.event.location %}
+                    <span>📍 {{ item.event.location }}</span>
+                {% endif %}
+            </div>
+            <div class="event-actions">
+                <button onclick="editEvent({{ item.event.id }})">✏️ Upraviť</button>
+                <button onclick="deleteEvent({{ item.event.id }})">🗑️ Zmazať</button>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Žiadne udalosti.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div id="eventModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeEventModal()">&times;</span>
+        <h2>Nová udalosť</h2>
+        <form id="eventForm">
+            <input type="text" name="title" placeholder="Názov udalosti" required>
+            <textarea name="description" placeholder="Popis"></textarea>
+            <input type="text" name="location" placeholder="Miesto">
+            <input type="datetime-local" name="start_at" required>
+            <input type="datetime-local" name="end_at">
+            <select name="repeat_rule">
+                <option value="NONE" selected>Bez opakovania</option>
+                <option value="DAILY">Denne</option>
+                <option value="WEEKLY">Týždenne</option>
+                <option value="MONTHLY">Mesačne</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Uložiť</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let editingEventId = null;
+
+function showCreateEventModal() {
+    editingEventId = null;
+    document.getElementById('eventModal').style.display = 'block';
+    document.querySelector('#eventModal h2').textContent = 'Nová udalosť';
+    document.getElementById('eventForm').reset();
+    document.querySelector('button[type="submit"]').textContent = 'Uložiť';
+}
+
+function closeEventModal() {
+    document.getElementById('eventModal').style.display = 'none';
+    editingEventId = null;
+}
+
+async function editEvent(id) {
+    try {
+        const response = await fetch(`/events/${id}`);
+        if (!response.ok) {
+            PlannerX.showNotification('Chyba pri načítaní udalosti', 'error');
+            return;
+        }
+        
+        const event = await response.json();
+        
+        // Fill form with event data
+        document.querySelector('input[name="title"]').value = event.title || '';
+        document.querySelector('textarea[name="description"]').value = event.description || '';
+        document.querySelector('input[name="location"]').value = event.location || '';
+        document.querySelector('select[name="repeat_rule"]').value = event.repeat_rule || 'NONE';
+        
+        if (event.start_at) {
+            const startDate = new Date(event.start_at);
+            const formattedStart = startDate.toISOString().slice(0, 16);
+            document.querySelector('input[name="start_at"]').value = formattedStart;
+        }
+        
+        if (event.end_at) {
+            const endDate = new Date(event.end_at);
+            const formattedEnd = endDate.toISOString().slice(0, 16);
+            document.querySelector('input[name="end_at"]').value = formattedEnd;
+        }
+        
+        // Set editing mode
+        editingEventId = id;
+        document.querySelector('#eventModal h2').textContent = 'Upraviť udalosť';
+        document.querySelector('button[type="submit"]').textContent = 'Uložiť zmeny';
+        document.getElementById('eventModal').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading event:', error);
+        PlannerX.showNotification('Chyba pri načítaní udalosti', 'error');
+    }
+}
+
+document.getElementById('eventForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    try {
+        let response;
+        if (editingEventId) {
+            // Update existing event
+            response = await fetch(`/events/${editingEventId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new event
+            response = await fetch('/events/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        }
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            const errorMsg = editingEventId ? 'Chyba pri úprave udalosti' : 'Chyba pri vytváraní udalosti';
+            PlannerX.showNotification(errorMsg, 'error');
+        }
+    } catch (error) {
+        console.error('Error saving event:', error);
+        PlannerX.showNotification('Chyba pri ukladaní udalosti', 'error');
+    }
+});
+
+async function deleteEvent(id) {
+    if (!confirm('Naozaj chcete zmazať túto udalosť?')) return;
+    
+    try {
+        const response = await fetch(`/events/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            PlannerX.showNotification('Chyba pri mazaní udalosti', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        PlannerX.showNotification('Chyba pri mazaní udalosti', 'error');
+    }
+}
+</script>
+{% endblock %}

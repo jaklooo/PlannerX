@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denný prehľad - PlannerX</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .email-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3B82F6;
+        }
+        .header h1 {
+            color: #3B82F6;
+            margin: 0;
+        }
+        .date {
+            color: #666;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section h2 {
+            color: #1F2937;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #3B82F6;
+        }
+        .task-list, .event-list {
+            list-style: none;
+            padding: 0;
+        }
+        .task-item, .event-item {
+            background: #F9FAFB;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #D1D5DB;
+        }
+        .task-item.high {
+            border-left-color: #EF4444;
+        }
+        .task-item.medium {
+            border-left-color: #F59E0B;
+        }
+        .task-item.low {
+            border-left-color: #10B981;
+        }
+        .task-title {
+            font-weight: 600;
+            color: #1F2937;
+        }
+        .task-meta {
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+        .news-item {
+            background: #F9FAFB;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+        }
+        .news-title {
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 5px;
+        }
+        .news-summary {
+            font-size: 14px;
+            color: #4B5563;
+            line-height: 1.5;
+        }
+        .news-source {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 5px;
+        }
+        .celebration-item {
+            background: #FEF3C7;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #F59E0B;
+        }
+        .empty-state {
+            color: #9CA3AF;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #3B82F6;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            color: #9CA3AF;
+            font-size: 12px;
+        }
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #1F2937; }
+            .email-container { background: #111827; color: #E5E7EB; }
+            .task-item, .event-item, .news-item { background: #1F2937; }
+            .task-title, .news-title { color: #F9FAFB; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>📅 PlannerX - Denný prehľad</h1>
+            <p class="date">{{ today.strftime('%A, %d. %B %Y') }}</p>
+        </div>
+
+        <!-- Tasks Section -->
+        <div class="section">
+            <h2>📋 Dnešné úlohy</h2>
+            {% if tasks_today %}
+                <ul class="task-list">
+                    {% for task in tasks_today %}
+                    <li class="task-item {{ task.priority|lower }}">
+                        <div class="task-title">{{ task.title }}</div>
+                        <div class="task-meta">
+                            Priorita: {{ task.priority }} 
+                            {% if task.due_at %}
+                            | ⏰ {{ task.due_at.strftime('%H:%M') }}
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">✅ Žiadne úlohy na dnes! Máte voľný deň.</p>
+            {% endif %}
+        </div>
+
+        <!-- Overdue Tasks -->
+        {% if overdue_tasks %}
+        <div class="section">
+            <h2>⚠️ Po termíne</h2>
+            <ul class="task-list">
+                {% for task in overdue_tasks[:3] %}
+                <li class="task-item high">
+                    <div class="task-title">{{ task.title }}</div>
+                    <div class="task-meta">Termín: {{ task.due_at.strftime('%d.%m.%Y') }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Events Section -->
+        <div class="section">
+            <h2>📅 Dnešné udalosti</h2>
+            {% if events_today %}
+                <ul class="event-list">
+                    {% for item in events_today %}
+                    <li class="event-item">
+                        <div class="task-title">{{ item.event.title }}</div>
+                        <div class="task-meta">
+                            ⏰ {{ item.event.start_at.strftime('%H:%M') }}
+                            {% if item.event.location %}
+                            | 📍 {{ item.event.location }}
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">📆 Žiadne udalosti na dnes.</p>
+            {% endif %}
+        </div>
+
+        <!-- Celebrations Section -->
+        {% if birthdays_today or namedays_today or nameday_names %}
+        <div class="section">
+            <h2>🎉 Dnes oslavujú</h2>
+            
+            {% if birthdays_today %}
+                {% for contact in birthdays_today %}
+                <div class="celebration-item">
+                    🎂 <strong>{{ contact.name }}</strong> má narodeniny!
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if namedays_today %}
+                {% for contact in namedays_today %}
+                <div class="celebration-item">
+                    🎈 <strong>{{ contact.name }}</strong> má meniny!
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if nameday_names %}
+                <div class="celebration-item">
+                    Meniny dnes oslavujú: <strong>{{ nameday_names|join(', ') }}</strong>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- News Section -->
+        <div class="section">
+            <h2>📰 Denné novinky</h2>
+            {% if news_summary %}
+                <div class="news-item" style="background: #F3F4F6; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <div class="news-title" style="font-size: 16px; margin-bottom: 10px;">🤖 AI súhrn najdôležitejších správ</div>
+                    <div class="news-summary" style="white-space: pre-line;">{{ news_summary }}</div>
+                </div>
+            {% endif %}
+            
+            {% if news_items %}
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 16px; color: #374151; margin-bottom: 10px;">📄 Najnovšie správy</h3>
+                    {% for item in news_items %}
+                    <div class="news-item">
+                        <div class="news-title">{{ item.title }}</div>
+                        {% if item.summary %}
+                            <div class="news-summary">{{ item.summary }}</div>
+                        {% endif %}
+                        <div class="news-source">
+                            {{ item.source }}
+                            {% if item.link %}
+                            | <a href="{{ item.link }}" style="color: #3B82F6;">Čítať viac</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if not news_summary and not news_items %}
+                <p class="empty-state">Žiadne novinky nie sú k dispozícii.</p>
+            {% endif %}
+        </div>
+
+        <!-- CTA -->
+        <div style="text-align: center;">
+            <a href="https://your-plannerx-domain.com/" class="cta-button">
+                Otvoriť PlannerX
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Tento email bol odoslaný automaticky z PlannerX.</p>
+            <p>Nastavenia môžete upraviť vo svojom účte.</p>
+        </div>
+    </div>
+</body>
+</html>

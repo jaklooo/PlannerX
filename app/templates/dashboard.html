@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - PlannerX{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>🌅 Dobrý deň!</h1>
+    <p class="date">{{ today.strftime('%A, %d. %B %Y') }}</p>
+
+    <div class="grid">
+        <!-- Today's Tasks -->
+        <div class="card">
+            <h2>📋 Dnešné úlohy ({{ tasks_today|length }})</h2>
+            {% if tasks_today %}
+                <ul class="task-list">
+                    {% for task in tasks_today %}
+                    <li class="task-item priority-{{ task.priority|lower }}">
+                        <span class="task-title">{{ task.title }}</span>
+                        <span class="task-priority">{{ task.priority }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">✅ Žiadne úlohy na dnes. Super!</p>
+                <a href="/tasks/create" class="btn btn-primary">Pridať úlohu</a>
+            {% endif %}
+        </div>
+
+        <!-- Today's Events -->
+        <div class="card">
+            <h2>📅 Dnešné udalosti ({{ events_today|length }})</h2>
+            {% if events_today %}
+                <ul class="event-list">
+                    {% for item in events_today %}
+                    <li class="event-item">
+                        <span class="event-time">{{ item.event.start_at.strftime('%H:%M') }}</span>
+                        <span class="event-title">{{ item.event.title }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-state">📆 Žiadne udalosti na dnes.</p>
+                <a href="/events/create" class="btn btn-primary">Pridať udalosť</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Overdue Tasks -->
+    {% if overdue_tasks %}
+    <div class="card alert-warning">
+        <h2>⚠️ Po termíne ({{ overdue_tasks|length }})</h2>
+        <ul class="task-list">
+            {% for task in overdue_tasks %}
+            <li class="task-item">
+                <span class="task-title">{{ task.title }}</span>
+                <span class="task-due">{{ task.due_at.strftime('%d.%m.%Y') }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- This Week -->
+    <div class="card">
+        <h2>📆 Tento týždeň ({{ tasks_week|length }} úloh)</h2>
+        {% if tasks_week %}
+            <ul class="task-list">
+                {% for task in tasks_week[:5] %}
+                <li class="task-item">
+                    <span class="task-title">{{ task.title }}</span>
+                    <span class="task-due">{{ task.due_at.strftime('%d.%m %H:%M') if task.due_at else '' }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if tasks_week|length > 5 %}
+                <a href="/tasks?filter=week" class="btn btn-link">Zobraziť všetky</a>
+            {% endif %}
+        {% else %}
+            <p class="empty-state">Žiadne úlohy tento týždeň.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

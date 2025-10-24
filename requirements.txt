@@ -1,0 +1,20 @@
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+SQLAlchemy>=2.0.35
+alembic==1.13.0
+APScheduler==3.10.4
+PyYAML==6.0.1
+feedparser==6.0.11
+requests==2.31.0
+python-dotenv==1.0.0
+gunicorn==21.2.0
+
+# Database
+psycopg2-binary==2.9.9
+
+# Authentication & AI
+firebase-admin==6.2.0
+openai==1.12.0
+
+# Optional dependencies
+twilio==8.11.1  # For SMS support

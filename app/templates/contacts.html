@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Kontakty - PlannerX{% endblock %}
+
+{% block content %}
+<div class="contacts-page">
+    <div class="page-header">
+        <h1>👥 Kontakty</h1>
+        <button class="btn btn-primary" onclick="showCreateContactModal()">+ Nový kontakt</button>
+    </div>
+
+    <div class="contact-list">
+        {% for contact in contacts %}
+        <div class="contact-card" data-contact-id="{{ contact.id }}">
+            <div class="contact-header">
+                <h3>{{ contact.name }}</h3>
+            </div>
+            <div class="contact-details">
+                {% if contact.email %}
+                    <p>✉️ {{ contact.email }}</p>
+                {% endif %}
+                {% if contact.phone %}
+                    <p>📱 {{ contact.phone }}</p>
+                {% endif %}
+                {% if contact.birthday_date %}
+                    <p>🎂 Narodeniny: {{ contact.birthday_date.strftime('%d.%m.%Y') }}</p>
+                {% endif %}
+                {% if contact.name_day_date %}
+                    <p>🎉 Meniny: {{ contact.name_day_date.strftime('%d.%m') }}</p>
+                {% endif %}
+            </div>
+            <div class="contact-actions">
+                <button onclick="editContact({{ contact.id }})">✏️ Upraviť</button>
+                <button onclick="deleteContact({{ contact.id }})">🗑️ Zmazať</button>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Žiadne kontakty.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div id="contactModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeContactModal()">&times;</span>
+        <h2>Nový kontakt</h2>
+        <form id="contactForm">
+            <input type="text" name="name" placeholder="Meno" required>
+            <input type="email" name="email" placeholder="Email">
+            <input type="tel" name="phone" placeholder="Telefón">
+            <input type="date" name="birthday_date" placeholder="Narodeniny">
+            <input type="date" name="name_day_date" placeholder="Meniny (DD-MM)">
+            <textarea name="notes" placeholder="Poznámky"></textarea>
+            <button type="submit" class="btn btn-primary">Uložiť</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let editingContactId = null;
+
+function showCreateContactModal() {
+    editingContactId = null;
+    document.getElementById('contactModal').style.display = 'block';
+    document.querySelector('#contactModal h2').textContent = 'Nový kontakt';
+    document.getElementById('contactForm').reset();
+    document.querySelector('button[type="submit"]').textContent = 'Uložiť';
+}
+
+function closeContactModal() {
+    document.getElementById('contactModal').style.display = 'none';
+    editingContactId = null;
+}
+
+async function editContact(id) {
+    try {
+        const response = await fetch(`/contacts/${id}`);
+        if (!response.ok) {
+            PlannerX.showNotification('Chyba pri načítaní kontaktu', 'error');
+            return;
+        }
+        
+        const contact = await response.json();
+        
+        // Fill form with contact data
+        document.querySelector('input[name="name"]').value = contact.name || '';
+        document.querySelector('input[name="email"]').value = contact.email || '';
+        document.querySelector('input[name="phone"]').value = contact.phone || '';
+        document.querySelector('textarea[name="notes"]').value = contact.notes || '';
+        
+        if (contact.birthday_date) {
+            const birthday = new Date(contact.birthday_date);
+            const formattedBirthday = birthday.toISOString().split('T')[0];
+            document.querySelector('input[name="birthday_date"]').value = formattedBirthday;
+        }
+        
+        if (contact.name_day_date) {
+            // name_day_date is stored as MM-DD, convert to YYYY-MM-DD for input
+            const currentYear = new Date().getFullYear();
+            const [month, day] = contact.name_day_date.split('-');
+            const nameDay = new Date(currentYear, parseInt(month) - 1, parseInt(day));
+            const formattedNameDay = nameDay.toISOString().split('T')[0];
+            document.querySelector('input[name="name_day_date"]').value = formattedNameDay;
+        }
+        
+        // Set editing mode
+        editingContactId = id;
+        document.querySelector('#contactModal h2').textContent = 'Upraviť kontakt';
+        document.querySelector('button[type="submit"]').textContent = 'Uložiť zmeny';
+        document.getElementById('contactModal').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading contact:', error);
+        PlannerX.showNotification('Chyba pri načítaní kontaktu', 'error');
+    }
+}
+
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    // Convert birthday_date and name_day_date formats
+    if (data.birthday_date) {
+        data.birthday_date = data.birthday_date; // Already in YYYY-MM-DD format
+    }
+    
+    if (data.name_day_date) {
+        // Convert from YYYY-MM-DD back to MM-DD for name_day_date
+        const date = new Date(data.name_day_date);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        data.name_day_date = `${month}-${day}`;
+    }
+    
+    try {
+        let response;
+        if (editingContactId) {
+            // Update existing contact
+            response = await fetch(`/contacts/${editingContactId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        } else {
+            // Create new contact
+            response = await fetch('/contacts/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+        }
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            const errorMsg = editingContactId ? 'Chyba pri úprave kontaktu' : 'Chyba pri vytváraní kontaktu';
+            PlannerX.showNotification(errorMsg, 'error');
+        }
+    } catch (error) {
+        console.error('Error saving contact:', error);
+        PlannerX.showNotification('Chyba pri ukladaní kontaktu', 'error');
+    }
+});
+
+async function deleteContact(id) {
+    if (!confirm('Naozaj chcete zmazať tento kontakt?')) return;
+    
+    try {
+        const response = await fetch(`/contacts/${id}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            location.reload();
+        } else {
+            PlannerX.showNotification('Chyba pri mazaní kontaktu', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting contact:', error);
+        PlannerX.showNotification('Chyba pri mazaní kontaktu', 'error');
+    }
+}
+</script>
+{% endblock %}

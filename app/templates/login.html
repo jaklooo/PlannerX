@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prihlásenie - PlannerX</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 420px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .dev-login {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .dev-login h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .dev-login p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .dev-login code {
+            display: block;
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #667eea;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .dev-login button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+        
+        .dev-login button:hover {
+            background: #5568d3;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            color: #999;
+            font-size: 13px;
+            position: relative;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .divider::before {
+            left: 0;
+        }
+        
+        .divider::after {
+            right: 0;
+        }
+        
+        .firebase-login {
+            text-align: center;
+        }
+        
+        .firebase-login button {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .firebase-login button:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .firebase-login p {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>📅 PlannerX</h1>
+            <p>Váš osobný plánovač úloh a udalostí</p>
+        </div>
+        
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+        
+        <!-- Development Login -->
+        <div class="dev-login">
+            <h3>🔧 Development režim</h3>
+            <p>Pre testovanie použite demo účet:</p>
+            <code>dev_demo_user:demo@plannerx.local</code>
+            <button onclick="devLogin()">Prihlásiť sa (Demo)</button>
+        </div>
+        
+        <div class="divider">ALEBO</div>
+        
+        <!-- Firebase Login -->
+        <div class="firebase-login">
+            <button onclick="firebaseLogin()">
+                🔐 Prihlásiť sa cez Firebase
+            </button>
+            <p>Vyžaduje nakonfigurovaný Firebase projekt</p>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXBDMIvif7HbbtUxsn43QhUMmvqtTHbSg",
+            authDomain: "plannerx-905b1.firebaseapp.com",
+            projectId: "plannerx-905b1",
+            storageBucket: "plannerx-905b1.firebasestorage.app",
+            messagingSenderId: "1062298989231",
+            appId: "1:1062298989231:web:e220eda8e027ad8ed8da5a",
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        function showError(message) {
+            const errorEl = document.getElementById('error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successEl = document.getElementById('success');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+        
+        async function devLogin() {
+            // In development mode, just redirect - server will auto-login
+            showSuccess('✅ Prihlásenie úspešné! Presmerovávam...');
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 500);
+        }
+        
+        async function firebaseLogin() {
+            try {
+                // Show prompt for email/password
+                const email = prompt('📧 Zadajte email:');
+                if (!email) return;
+                
+                const password = prompt('🔒 Zadajte heslo:');
+                if (!password) return;
+                
+                showSuccess('⏳ Prihlasovanie...');
+                
+                // Try to sign in
+                let userCredential;
+                try {
+                    userCredential = await auth.signInWithEmailAndPassword(email, password);
+                } catch (signInError) {
+                    // If user doesn't exist, try to create account
+                    if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/wrong-password') {
+                        const createAccount = confirm('Účet neexistuje. Chcete vytvoriť nový účet?');
+                        if (createAccount) {
+                            userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                            showSuccess('✅ Účet vytvorený!');
+                        } else {
+                            throw signInError;
+                        }
+                    } else {
+                        throw signInError;
+                    }
+                }
+                
+                // Get ID token
+                const idToken = await userCredential.user.getIdToken();
+                
+                // Store token
+                localStorage.setItem('auth_token', idToken);
+                
+                showSuccess('✅ Prihlásenie úspešné! Presmerovávam...');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Firebase login error:', error);
+                let errorMessage = 'Prihlásenie zlyhalo: ';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage += 'Neplatný email';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage += 'Účet je deaktivovaný';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage += 'Používateľ neexistuje';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage += 'Nesprávne heslo';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage += 'Heslo je príliš slabé (min. 6 znakov)';
+                        break;
+                    case 'auth/email-already-in-use':
+                        errorMessage += 'Email sa už používa';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                
+                showError(errorMessage);
+            }
+        }
+        
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>

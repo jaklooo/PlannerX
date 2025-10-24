@@ -1,0 +1,21 @@
+feeds:
+  - name: BBC News
+    url: http://feeds.bbci.co.uk/news/rss.xml
+  
+  - name: Reuters World News
+    url: https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best
+  
+  - name: Associated Press
+    url: https://apnews.com/hub/ap-top-news
+  
+  - name: The Guardian World
+    url: https://www.theguardian.com/world/rss
+  
+  - name: CNN Top Stories
+    url: http://rss.cnn.com/rss/edition.rss
+  
+  - name: Denník N (SK)
+    url: https://dennikn.sk/feed/
+  
+  - name: SME.sk (SK)
+    url: https://www.sme.sk/rss/
