@@ -16,6 +16,9 @@ from app import create_app
 # Create application instance
 app = create_app(os.getenv("FLASK_ENV", "production"))
 
+# For gunicorn
+application = app
+
 if __name__ == "__main__":
     # Enable URL map adapter to allow URLs without trailing slash
     app.url_map.strict_slashes = False
