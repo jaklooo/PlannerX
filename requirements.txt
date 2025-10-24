@@ -10,7 +10,7 @@ python-dotenv==1.0.0
 gunicorn==21.2.0
 
 # Database
-psycopg[binary]==3.1.18
+psycopg[binary]>=3.2.2
 
 # Authentication & AI
 firebase-admin==6.2.0
