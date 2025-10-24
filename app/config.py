@@ -36,6 +36,8 @@ class BaseConfig:
     FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "")
     FIREBASE_API_KEY = os.getenv("FIREBASE_API_KEY", "")
     FIREBASE_AUTH_EMULATOR_HOST = os.getenv("FIREBASE_AUTH_EMULATOR_HOST", "")
+    FIREBASE_MESSAGING_SENDER_ID = os.getenv("FIREBASE_MESSAGING_SENDER_ID", "")
+    FIREBASE_APP_ID = os.getenv("FIREBASE_APP_ID", "")
     FIREBASE_ALLOWED_ISSUER = os.getenv(
         "FIREBASE_ALLOWED_ISSUER",
         f"https://securetoken.google.com/{os.getenv('FIREBASE_PROJECT_ID', '')}",
