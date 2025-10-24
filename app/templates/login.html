@@ -341,9 +341,9 @@
                 
                 showSuccess('✅ Prihlásenie úspešné! Presmerovávam...');
                 
-                // Redirect to dashboard
+                // Redirect to dashboard with token as query parameter
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = '/dashboard/?token=' + encodeURIComponent(idToken);
                 }, 1000);
                 
             } catch (error) {

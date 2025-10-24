@@ -109,8 +109,37 @@ def require_auth(f):
         
         # Production mode: redirect to login if no token for GET requests to dashboard
         if not auth_header and request.method == "GET" and request.path.startswith("/dashboard"):
-            from flask import redirect, url_for
-            return redirect(url_for("auth.login"))
+            # Check if token is provided as query parameter
+            token_param = request.args.get('token')
+            if token_param:
+                # Verify the token from query parameter
+                try:
+                    token_data = verify_id_token(token_param)
+                    # Get or create user
+                    from app.models.user import User
+                    from app import db
+                    
+                    user = User.query.filter_by(uid=token_data["uid"]).first()
+                    
+                    if not user:
+                        user = User(
+                            uid=token_data["uid"],
+                            email=token_data["email"],
+                            email_verified=token_data.get("email_verified", False),
+                        )
+                        db.session.add(user)
+                        db.session.commit()
+                        logger.info(f"Created new user: {user.uid}")
+                    
+                    g.current_user = user
+                    return f(*args, **kwargs)
+                except ValueError as e:
+                    logger.error(f"Token verification failed for query param: {e}")
+                    from flask import redirect, url_for
+                    return redirect(url_for("auth.login"))
+            else:
+                from flask import redirect, url_for
+                return redirect(url_for("auth.login"))
         
         if not auth_header.startswith("Bearer "):
             # For API requests, return JSON error

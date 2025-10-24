@@ -36,6 +36,16 @@
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     <script>
+        // Check for token in URL query parameter and store it
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenParam = urlParams.get('token');
+        if (tokenParam) {
+            PlannerX.setToken(tokenParam);
+            // Clean up URL by removing the token parameter
+            const newUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+        
         // Logout function
         function logout() {
             localStorage.removeItem('auth_token');
