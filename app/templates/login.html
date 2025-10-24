@@ -337,6 +337,7 @@
                 
                 // Store token
                 localStorage.setItem('auth_token', idToken);
+                PlannerX.setToken(idToken);
                 
                 showSuccess('✅ Prihlásenie úspešné! Presmerovávam...');
                 
@@ -376,13 +377,13 @@
             }
         }
         
-        // Check if already logged in
-        window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('auth_token');
-            if (token) {
-                window.location.href = '/dashboard';
-            }
-        });
+        // Check if already logged in - DISABLED for manual login only
+        // window.addEventListener('DOMContentLoaded', () => {
+        //     const token = localStorage.getItem('auth_token');
+        //     if (token) {
+        //         window.location.href = '/dashboard';
+        //     }
+        // });
     </script>
 </body>
 </html>

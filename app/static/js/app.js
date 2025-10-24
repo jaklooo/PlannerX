@@ -1,29 +1,31 @@
 // PlannerX Frontend JavaScript
 
-// Store Firebase ID token
-let idToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken');
+// Store Firebase ID token - DISABLED automatic demo token
+// let idToken = localStorage.getItem('auth_token') || localStorage.getItem('idToken');
 
-// Only set demo token if there's absolutely no token (not even an old one)
-if (!idToken) {
-    idToken = 'dev_demo_user:demo@plannerx.local';
-    localStorage.setItem('auth_token', idToken);
-    localStorage.setItem('idToken', idToken);
-}
+// Only set demo token if there's absolutely no token (not even an old one) - DISABLED
+// if (!idToken) {
+//     idToken = 'dev_demo_user:demo@plannerx.local';
+//     localStorage.setItem('auth_token', idToken);
+//     localStorage.setItem('idToken', idToken);
+// }
 
-// Set token on all API requests
+// Initialize idToken as empty for manual login only
+let idToken = '';
+
+// Set token on all API requests - only if token exists
 const originalFetch = window.fetch;
 window.fetch = function(url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    // Add Authorization header for API calls and POST/PUT/DELETE requests to protected routes
-    // Include dashboard GET requests for authentication
+    // Add Authorization header for API calls and protected routes only if token exists
     const isApiCall = url.startsWith('/api/');
     const isProtectedRoute = url.startsWith('/tasks') || url.startsWith('/events') || 
                            url.startsWith('/contacts') || url.startsWith('/settings');
     const isDashboard = url.startsWith('/dashboard');
     
-    if (isApiCall || isProtectedRoute || isDashboard) {
+    if ((isApiCall || isProtectedRoute || isDashboard) && idToken) {
         options.headers['Authorization'] = `Bearer ${idToken}`;
     }
     return originalFetch(url, options);
@@ -122,6 +124,7 @@ window.PlannerX = {
     setToken: (token) => {
         idToken = token;
         localStorage.setItem('idToken', token);
+        localStorage.setItem('auth_token', token);
     },
     getToken: () => idToken
 };
