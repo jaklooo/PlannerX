@@ -50,7 +50,10 @@
         function logout() {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('idToken');
-            window.location.href = '/login';
+            // Clear session on server side
+            fetch('/logout', { method: 'POST' }).finally(() => {
+                window.location.href = '/login';
+            });
         }
     </script>
     {% block scripts %}{% endblock %}

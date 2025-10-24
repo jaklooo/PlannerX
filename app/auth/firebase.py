@@ -85,6 +85,8 @@ def require_auth(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        from flask import session
+        
         auth_header = request.headers.get("Authorization", "")
         
         # Development mode: auto-login as demo user if no token
@@ -105,7 +107,17 @@ def require_auth(f):
                 logger.info("Created demo user for development")
             
             g.current_user = demo_user
+            session['user_id'] = demo_user.id
             return f(*args, **kwargs)
+        
+        # Check session for authenticated users (for page navigation)
+        if not auth_header and request.method == "GET" and 'user_id' in session:
+            user_id = session['user_id']
+            from app.models.user import User
+            user = User.query.get(user_id)
+            if user:
+                g.current_user = user
+                return f(*args, **kwargs)
         
         # Production mode: redirect to login if no token for GET requests to dashboard
         if not auth_header and request.method == "GET" and request.path.startswith("/dashboard"):
@@ -132,6 +144,7 @@ def require_auth(f):
                         logger.info(f"Created new user: {user.uid}")
                     
                     g.current_user = user
+                    session['user_id'] = user.id
                     return f(*args, **kwargs)
                 except ValueError as e:
                     logger.error(f"Token verification failed for query param: {e}")
@@ -180,6 +193,7 @@ def require_auth(f):
             logger.info(f"Created new user: {user.uid}")
         
         g.current_user = user
+        session['user_id'] = user.id
         
         return f(*args, **kwargs)
     
