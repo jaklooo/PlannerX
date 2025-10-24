@@ -107,15 +107,32 @@ def require_auth(f):
             g.current_user = demo_user
             return f(*args, **kwargs)
         
+        # Production mode: redirect to login if no token for GET requests to dashboard
+        if not auth_header and request.method == "GET" and request.path in ["/", "/dashboard"]:
+            from flask import redirect, url_for
+            return redirect(url_for("auth.login"))
+        
         if not auth_header.startswith("Bearer "):
-            return jsonify({"error": "Missing or invalid Authorization header"}), 401
+            # For API requests, return JSON error
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "Missing or invalid Authorization header"}), 401
+            # For page requests, redirect to login
+            else:
+                from flask import redirect, url_for
+                return redirect(url_for("auth.login"))
         
         id_token = auth_header.replace("Bearer ", "")
         
         try:
             token_data = verify_id_token(id_token)
         except ValueError as e:
-            return jsonify({"error": str(e)}), 401
+            # For API requests, return JSON error
+            if request.path.startswith("/api/"):
+                return jsonify({"error": str(e)}), 401
+            # For page requests, redirect to login
+            else:
+                from flask import redirect, url_for
+                return redirect(url_for("auth.login"))
         
         # Get or create user
         from app.models.user import User
