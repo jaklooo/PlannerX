@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PlannerX{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/wooden-glass-theme.css') }}">
 </head>
 <body>
-    <nav class="navbar">
+    <nav class="navbar glass-tile">
         <div class="container">
-            <a href="/dashboard" class="logo">📅 PlannerX</a>
+            <a href="/dashboard" class="logo-link">
+                <img src="{{ url_for('static', filename='images/dashboard_logo.png') }}" alt="PlannerX" class="nav-logo">
+            </a>
             <ul class="nav-links">
-                <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/tasks">Úlohy</a></li>
-                <li><a href="/events">Udalosti</a></li>
-                <li><a href="/contacts">Kontakty</a></li>
-                <li><a href="/settings">Nastavenia</a></li>
-                <li><a href="#" onclick="logout()">Odhlásiť</a></li>
+                <li><a href="/dashboard" class="btn-glass">Dashboard</a></li>
+                <li><a href="/tasks" class="btn-glass">Úlohy</a></li>
+                <li><a href="/events" class="btn-glass">Udalosti</a></li>
+                <li><a href="/contacts" class="btn-glass">Kontakty</a></li>
+                <li><a href="/settings" class="btn-glass">Nastavenia</a></li>
+                <li><a href="#" onclick="logout()" class="btn-glass btn-glass-primary">Odhlásiť</a></li>
             </ul>
         </div>
     </nav>
@@ -25,9 +28,9 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer>
+    <footer class="glass-tile" style="margin-top: 3rem; padding: 1.5rem 0;">
         <div class="container">
-            <p>&copy; 2025 PlannerX. Všetky práva vyhradené.</p>
+            <p style="text-align: center; color: var(--text-secondary); margin: 0;">&copy; 2025 PlannerX. Všetky práva vyhradené.</p>
         </div>
     </footer>
 

@@ -3,40 +3,40 @@
 {% block title %}Kontakty - PlannerX{% endblock %}
 
 {% block content %}
-<div class="contacts-page">
-    <div class="page-header">
-        <h1>👥 Kontakty</h1>
-        <button class="btn btn-primary" onclick="showCreateContactModal()">+ Nový kontakt</button>
+<div class="contacts-page container" style="padding-top: 2rem;">
+    <div class="glass-tile page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 2rem;">
+        <h1 style="color: var(--text-primary); margin: 0; font-size: 2.2rem;">👥 Kontakty</h1>
+        <button class="btn btn-glass-primary" onclick="showCreateContactModal()" style="font-size: 1.1rem; padding: 0.75rem 1.5rem;">+ Nový kontakt</button>
     </div>
 
     <div class="contact-list">
         {% for contact in contacts %}
-        <div class="contact-card" data-contact-id="{{ contact.id }}">
-            <div class="contact-header">
-                <h3>{{ contact.name }}</h3>
+        <div class="glass-tile contact-card" data-contact-id="{{ contact.id }}" style="margin-bottom: 1rem; padding: 1.5rem;">
+            <div class="contact-header" style="margin-bottom: 1rem;">
+                <h3 style="color: var(--text-primary); margin: 0; font-size: 1.3rem;">{{ contact.name }}</h3>
             </div>
-            <div class="contact-details">
+            <div class="contact-details" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
                 {% if contact.email %}
-                    <p>✉️ {{ contact.email }}</p>
+                    <p style="color: var(--text-secondary); margin: 0;">✉️ {{ contact.email }}</p>
                 {% endif %}
                 {% if contact.phone %}
-                    <p>📱 {{ contact.phone }}</p>
+                    <p style="color: var(--text-secondary); margin: 0;">📱 {{ contact.phone }}</p>
                 {% endif %}
                 {% if contact.birthday_date %}
-                    <p>🎂 Narodeniny: {{ contact.birthday_date.strftime('%d.%m.%Y') }}</p>
+                    <p style="color: var(--wood-accent); margin: 0; font-weight: 600;">🎂 Narodeniny: {{ contact.birthday_date.strftime('%d.%m.%Y') }}</p>
                 {% endif %}
                 {% if contact.name_day_date %}
-                    <p>🎉 Meniny: {{ contact.name_day_date.strftime('%d.%m') }}</p>
+                    <p style="color: var(--wood-accent); margin: 0; font-weight: 600;">🎉 Meniny: {{ contact.name_day_date.strftime('%d.%m') }}</p>
                 {% endif %}
             </div>
-            <div class="contact-actions">
-                <button onclick="editContact({{ contact.id }})">✏️ Upraviť</button>
-                <button onclick="deleteContact({{ contact.id }})">🗑️ Zmazať</button>
+            <div class="contact-actions" style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-glass" onclick="editContact({{ contact.id }})" style="flex: 1;">✏️ Upraviť</button>
+                <button class="btn btn-glass" onclick="deleteContact({{ contact.id }})" style="flex: 1; background: rgba(239, 68, 68, 0.1); color: var(--danger);">🗑️ Zmazať</button>
             </div>
         </div>
         {% else %}
-        <div class="empty-state">
-            <p>Žiadne kontakty.</p>
+        <div class="glass-tile empty-state" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-secondary); font-size: 1.2rem; margin: 0;">Žiadne kontakty.</p>
         </div>
         {% endfor %}
     </div>
@@ -44,17 +44,17 @@
 
 <!-- Create/Edit Modal -->
 <div id="contactModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeContactModal()">&times;</span>
-        <h2>Nový kontakt</h2>
-        <form id="contactForm">
-            <input type="text" name="name" placeholder="Meno" required>
-            <input type="email" name="email" placeholder="Email">
-            <input type="tel" name="phone" placeholder="Telefón">
-            <input type="date" name="birthday_date" placeholder="Narodeniny">
-            <input type="date" name="name_day_date" placeholder="Meniny (DD-MM)">
-            <textarea name="notes" placeholder="Poznámky"></textarea>
-            <button type="submit" class="btn btn-primary">Uložiť</button>
+    <div class="modal-content glass-tile" style="max-width: 500px; width: 90%; padding: 2rem;">
+        <span class="close" onclick="closeContactModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+        <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.8rem;">Nový kontakt</h2>
+        <form id="contactForm" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="text" name="name" placeholder="Meno" required class="input-glass" style="padding: 0.75rem;">
+            <input type="email" name="email" placeholder="Email" class="input-glass" style="padding: 0.75rem;">
+            <input type="tel" name="phone" placeholder="Telefón" class="input-glass" style="padding: 0.75rem;">
+            <input type="date" name="birthday_date" placeholder="Narodeniny" class="input-glass" style="padding: 0.75rem;">
+            <input type="date" name="name_day_date" placeholder="Meniny (DD-MM)" class="input-glass" style="padding: 0.75rem;">
+            <textarea name="notes" placeholder="Poznámky" class="input-glass" style="padding: 0.75rem; min-height: 100px; resize: vertical;"></textarea>
+            <button type="submit" class="btn btn-glass-primary" style="padding: 0.75rem; font-size: 1.1rem;">Uložiť</button>
         </form>
     </div>
 </div>

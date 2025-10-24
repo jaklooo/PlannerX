@@ -53,18 +53,14 @@
             font-family: 'Playfair Display', serif;
             letter-spacing: -1px;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .logo h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, var(--gold-medium) 20%, var(--gold-light) 50%, var(--gold-medium) 80%, transparent 100%);
-            border-radius: 2px;
+        .logo img {
+            max-height: 150px;
+            width: auto;
         }
         
         .logo p {
@@ -242,7 +238,7 @@
     <div class="wooden-bg"></div>
     <div class="login-container">
         <div class="logo">
-            <h1>📅 PlannerX</h1>
+            <img src="{{ url_for('static', filename='images/login_logo.png') }}" alt="PlannerX">
             <p>Váš osobný plánovač úloh a udalostí</p>
         </div>
         

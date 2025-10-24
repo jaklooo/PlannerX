@@ -3,57 +3,59 @@
 {% block title %}Dashboard - PlannerX{% endblock %}
 
 {% block content %}
-<div class="dashboard">
-    <h1>🌅 Dobrý deň!</h1>
-    <p class="date">{{ today.strftime('%A, %d. %B %Y') }}</p>
+<div class="dashboard container" style="padding-top: 2rem;">
+    <div class="glass-tile" style="text-align: center; margin-bottom: 2rem; padding: 2rem;">
+        <h1 style="color: var(--text-primary); margin-bottom: 0.5rem; font-size: 2.5rem;">🌅 Dobrý deň!</h1>
+        <p class="date" style="color: var(--text-secondary); font-size: 1.2rem; margin: 0;">{{ today.strftime('%A, %d. %B %Y') }}</p>
+    </div>
 
     <div class="grid">
         <!-- Today's Tasks -->
-        <div class="card">
-            <h2>📋 Dnešné úlohy ({{ tasks_today|length }})</h2>
+        <div class="glass-tile card">
+            <h2 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--wood-accent); padding-bottom: 0.5rem;">📋 Dnešné úlohy ({{ tasks_today|length }})</h2>
             {% if tasks_today %}
                 <ul class="task-list">
                     {% for task in tasks_today %}
-                    <li class="task-item priority-{{ task.priority|lower }}">
-                        <span class="task-title">{{ task.title }}</span>
-                        <span class="task-priority">{{ task.priority }}</span>
+                    <li class="task-item priority-{{ task.priority|lower }}" style="padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; background: rgba(188, 143, 90, 0.1);">
+                        <span class="task-title" style="font-weight: 600; color: var(--text-primary);">{{ task.title }}</span>
+                        <span class="task-priority wooden-accent" style="float: right;">{{ task.priority }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="empty-state">✅ Žiadne úlohy na dnes. Super!</p>
-                <a href="/tasks/create" class="btn btn-primary">Pridať úlohu</a>
+                <p class="empty-state" style="color: var(--text-secondary); font-style: italic;">✅ Žiadne úlohy na dnes. Super!</p>
+                <a href="/tasks/create" class="btn btn-glass-primary" style="margin-top: 1rem;">Pridať úlohu</a>
             {% endif %}
         </div>
 
         <!-- Today's Events -->
-        <div class="card">
-            <h2>📅 Dnešné udalosti ({{ events_today|length }})</h2>
+        <div class="glass-tile card">
+            <h2 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--wood-accent); padding-bottom: 0.5rem;">📅 Dnešné udalosti ({{ events_today|length }})</h2>
             {% if events_today %}
                 <ul class="event-list">
                     {% for item in events_today %}
-                    <li class="event-item">
-                        <span class="event-time">{{ item.event.start_at.strftime('%H:%M') }}</span>
-                        <span class="event-title">{{ item.event.title }}</span>
+                    <li class="event-item" style="padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; background: rgba(176, 224, 230, 0.1); border-left: 3px solid var(--wood-accent);">
+                        <span class="event-time" style="font-weight: 600; color: var(--wood-accent);">{{ item.event.start_at.strftime('%H:%M') }}</span>
+                        <span class="event-title" style="margin-left: 1rem; color: var(--text-primary);">{{ item.event.title }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="empty-state">📆 Žiadne udalosti na dnes.</p>
-                <a href="/events/create" class="btn btn-primary">Pridať udalosť</a>
+                <p class="empty-state" style="color: var(--text-secondary); font-style: italic;">📆 Žiadne udalosti na dnes.</p>
+                <a href="/events/create" class="btn btn-glass-primary" style="margin-top: 1rem;">Pridať udalosť</a>
             {% endif %}
         </div>
     </div>
 
     <!-- Overdue Tasks -->
     {% if overdue_tasks %}
-    <div class="card alert-warning">
-        <h2>⚠️ Po termíne ({{ overdue_tasks|length }})</h2>
+    <div class="glass-tile card alert-warning" style="border-left: 4px solid var(--danger); background: rgba(239, 68, 68, 0.1);">
+        <h2 style="color: var(--danger); margin-bottom: 1rem;">⚠️ Po termíne ({{ overdue_tasks|length }})</h2>
         <ul class="task-list">
             {% for task in overdue_tasks %}
-            <li class="task-item">
-                <span class="task-title">{{ task.title }}</span>
-                <span class="task-due">{{ task.due_at.strftime('%d.%m.%Y') }}</span>
+            <li class="task-item" style="padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; background: rgba(239, 68, 68, 0.05);">
+                <span class="task-title" style="color: var(--text-primary);">{{ task.title }}</span>
+                <span class="task-due" style="color: var(--danger); font-weight: 600; float: right;">{{ task.due_at.strftime('%d.%m.%Y') }}</span>
             </li>
             {% endfor %}
         </ul>
@@ -61,22 +63,22 @@
     {% endif %}
 
     <!-- This Week -->
-    <div class="card">
-        <h2>📆 Tento týždeň ({{ tasks_week|length }} úloh)</h2>
+    <div class="glass-tile card">
+        <h2 style="color: var(--text-primary); margin-bottom: 1rem; border-bottom: 2px solid var(--wood-accent); padding-bottom: 0.5rem;">📆 Tento týždeň ({{ tasks_week|length }} úloh)</h2>
         {% if tasks_week %}
             <ul class="task-list">
                 {% for task in tasks_week[:5] %}
-                <li class="task-item">
-                    <span class="task-title">{{ task.title }}</span>
-                    <span class="task-due">{{ task.due_at.strftime('%d.%m %H:%M') if task.due_at else '' }}</span>
+                <li class="task-item" style="padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; background: rgba(188, 143, 90, 0.05);">
+                    <span class="task-title" style="color: var(--text-primary);">{{ task.title }}</span>
+                    <span class="task-due" style="color: var(--text-secondary); float: right;">{{ task.due_at.strftime('%d.%m %H:%M') if task.due_at else '' }}</span>
                 </li>
                 {% endfor %}
             </ul>
             {% if tasks_week|length > 5 %}
-                <a href="/tasks?filter=week" class="btn btn-link">Zobraziť všetky</a>
+                <a href="/tasks?filter=week" class="btn btn-glass" style="margin-top: 1rem;">Zobraziť všetky</a>
             {% endif %}
         {% else %}
-            <p class="empty-state">Žiadne úlohy tento týždeň.</p>
+            <p class="empty-state" style="color: var(--text-secondary); font-style: italic;">Žiadne úlohy tento týždeň.</p>
         {% endif %}
     </div>
 </div>

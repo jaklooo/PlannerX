@@ -3,46 +3,46 @@
 {% block title %}Úlohy - PlannerX{% endblock %}
 
 {% block content %}
-<div class="tasks-page">
-    <div class="page-header">
-        <h1>📋 Úlohy</h1>
-        <button class="btn btn-primary" onclick="showCreateTaskModal()">+ Nová úloha</button>
+<div class="tasks-page container" style="padding-top: 2rem;">
+    <div class="glass-tile page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 2rem;">
+        <h1 style="color: var(--text-primary); margin: 0; font-size: 2.2rem;">📋 Úlohy</h1>
+        <button class="btn btn-glass-primary" onclick="showCreateTaskModal()" style="font-size: 1.1rem; padding: 0.75rem 1.5rem;">+ Nová úloha</button>
     </div>
 
-    <div class="filters">
-        <a href="/tasks?filter=all" class="filter-btn {% if filter == 'all' %}active{% endif %}">Všetky</a>
-        <a href="/tasks?filter=today" class="filter-btn {% if filter == 'today' %}active{% endif %}">Dnes</a>
-        <a href="/tasks?filter=week" class="filter-btn {% if filter == 'week' %}active{% endif %}">Tento týždeň</a>
-        <a href="/tasks?filter=overdue" class="filter-btn {% if filter == 'overdue' %}active{% endif %}">Po termíne</a>
+    <div class="glass-tile filters" style="display: flex; gap: 1rem; margin-bottom: 2rem; padding: 1.5rem;">
+        <a href="/tasks?filter=all" class="btn btn-glass{% if filter == 'all' %} btn-glass-primary{% endif %}" style="text-decoration: none;">Všetky</a>
+        <a href="/tasks?filter=today" class="btn btn-glass{% if filter == 'today' %} btn-glass-primary{% endif %}" style="text-decoration: none;">Dnes</a>
+        <a href="/tasks?filter=week" class="btn btn-glass{% if filter == 'week' %} btn-glass-primary{% endif %}" style="text-decoration: none;">Tento týždeň</a>
+        <a href="/tasks?filter=overdue" class="btn btn-glass{% if filter == 'overdue' %} btn-glass-primary{% endif %}" style="text-decoration: none;">Po termíne</a>
     </div>
 
     <div class="task-list">
         {% for task in tasks %}
-        <div class="task-card priority-{{ task.priority|lower }}" data-task-id="{{ task.id }}">
-            <div class="task-header">
-                <h3>{{ task.title }}</h3>
-                <span class="priority-badge">{{ task.priority }}</span>
+        <div class="glass-tile task-card priority-{{ task.priority|lower }}" data-task-id="{{ task.id }}" style="margin-bottom: 1rem; padding: 1.5rem;">
+            <div class="task-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="color: var(--text-primary); margin: 0; font-size: 1.3rem;">{{ task.title }}</h3>
+                <span class="priority-badge wooden-accent">{{ task.priority }}</span>
             </div>
             {% if task.notes %}
-                <p class="task-notes">{{ task.notes }}</p>
+                <p class="task-notes" style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5;">{{ task.notes }}</p>
             {% endif %}
-            <div class="task-footer">
-                <span class="task-due">
+            <div class="task-footer" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="task-due" style="color: var(--text-secondary);">
                     {% if task.due_at %}
                         🕒 {{ task.due_at.strftime('%d.%m.%Y %H:%M') }}
                     {% endif %}
                 </span>
-                <span class="task-status status-{{ task.status|lower }}">{{ task.status }}</span>
+                <span class="task-status status-{{ task.status|lower }} wooden-accent">{{ task.status }}</span>
             </div>
-            <div class="task-actions">
-                <button onclick="editTask({{ task.id }})">✏️ Upraviť</button>
-                <button onclick="snoozeTask({{ task.id }})">⏰ Odložiť</button>
-                <button onclick="deleteTask({{ task.id }})">🗑️ Zmazať</button>
+            <div class="task-actions" style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-glass" onclick="editTask({{ task.id }})" style="flex: 1;">✏️ Upraviť</button>
+                <button class="btn btn-glass" onclick="snoozeTask({{ task.id }})" style="flex: 1;">⏰ Odložiť</button>
+                <button class="btn btn-glass" onclick="deleteTask({{ task.id }})" style="flex: 1; background: rgba(239, 68, 68, 0.1); color: var(--danger);">🗑️ Zmazať</button>
             </div>
         </div>
         {% else %}
-        <div class="empty-state">
-            <p>Žiadne úlohy.</p>
+        <div class="glass-tile empty-state" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-secondary); font-size: 1.2rem; margin: 0;">Žiadne úlohy.</p>
         </div>
         {% endfor %}
     </div>
@@ -50,24 +50,24 @@
 
 <!-- Create/Edit Modal -->
 <div id="taskModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <span class="close" onclick="closeTaskModal()">&times;</span>
-        <h2>Nová úloha</h2>
-        <form id="taskForm">
-            <input type="text" name="title" placeholder="Názov úlohy" required>
-            <textarea name="notes" placeholder="Poznámky"></textarea>
-            <input type="datetime-local" name="due_at">
-            <select name="priority">
+    <div class="modal-content glass-tile" style="max-width: 500px; width: 90%; padding: 2rem;">
+        <span class="close" onclick="closeTaskModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+        <h2 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.8rem;">Nová úloha</h2>
+        <form id="taskForm" style="display: flex; flex-direction: column; gap: 1rem;">
+            <input type="text" name="title" placeholder="Názov úlohy" required class="input-glass" style="padding: 0.75rem;">
+            <textarea name="notes" placeholder="Poznámky" class="input-glass" style="padding: 0.75rem; min-height: 100px; resize: vertical;"></textarea>
+            <input type="datetime-local" name="due_at" class="input-glass" style="padding: 0.75rem;">
+            <select name="priority" class="input-glass" style="padding: 0.75rem;">
                 <option value="LOW">Nízka priorita</option>
                 <option value="MEDIUM" selected>Stredná priorita</option>
                 <option value="HIGH">Vysoká priorita</option>
             </select>
-            <select name="status">
+            <select name="status" class="input-glass" style="padding: 0.75rem;">
                 <option value="TODO" selected>TODO</option>
                 <option value="DOING">V procese</option>
                 <option value="DONE">Hotovo</option>
             </select>
-            <button type="submit" class="btn btn-primary">Uložiť</button>
+            <button type="submit" class="btn btn-glass-primary" style="padding: 0.75rem; font-size: 1.1rem;">Uložiť</button>
         </form>
     </div>
 </div>
