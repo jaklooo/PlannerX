@@ -17,13 +17,13 @@ window.fetch = function(url, options = {}) {
         options.headers = {};
     }
     // Add Authorization header for API calls and POST/PUT/DELETE requests to protected routes
-    // Don't add it for GET requests to dashboard (server-side rendering)
+    // Include dashboard GET requests for authentication
     const isApiCall = url.startsWith('/api/');
     const isProtectedRoute = url.startsWith('/tasks') || url.startsWith('/events') || 
                            url.startsWith('/contacts') || url.startsWith('/settings');
-    const isDashboardGet = url.startsWith('/dashboard') && (!options.method || options.method === 'GET');
+    const isDashboard = url.startsWith('/dashboard');
     
-    if ((isApiCall || isProtectedRoute) && !isDashboardGet) {
+    if (isApiCall || isProtectedRoute || isDashboard) {
         options.headers['Authorization'] = `Bearer ${idToken}`;
     }
     return originalFetch(url, options);
